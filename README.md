@@ -31,7 +31,16 @@ Do not use it for pure review, explanation, lookup, path finding, or design disc
 
 ### Install
 
-Clone this repository into the skills directory for your coding tool.
+Option A: clone this repository anywhere and install it to local tool directories:
+
+```bash
+git clone https://github.com/hishanshi/shanshi-coding.git
+cd shanshi-coding
+./publish.sh -n install all
+./publish.sh install all
+```
+
+Option B: clone it directly into one tool's skills directory.
 
 #### Codex
 
@@ -56,14 +65,35 @@ git clone https://github.com/hishanshi/shanshi-coding.git ~/.config/opencode/ski
 
 ### Update
 
+If you installed with `publish.sh`:
+
+```bash
+git pull
+./publish.sh install all
+```
+
+If you cloned directly into a tool directory:
+
 ```bash
 git -C ~/.agents/skills/shanshi-coding pull
 ```
 
 Adjust the path if you installed it for Claude Code or opencode.
 
+### Uninstall
+
+If you installed with `publish.sh`:
+
+```bash
+./publish.sh -n uninstall all
+./publish.sh uninstall all
+```
+
+The uninstall command only removes SKILL.md files marked as managed by this script. If you cloned this repository directly into a tool directory, remove that cloned directory manually.
+
 ## Files
 
 - `SKILL.md`: the actual skill loaded by coding agents.
 - `README.md`: English usage documentation.
 - `README.zh-CN.md`: Chinese usage documentation.
+- `publish.sh`: local install/uninstall script for Claude Code, Codex, and opencode.

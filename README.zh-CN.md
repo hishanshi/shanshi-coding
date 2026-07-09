@@ -31,7 +31,16 @@
 
 ## 安装
 
-把这个仓库 clone 到对应工具的 skills 目录。
+方式 A：把仓库 clone 到任意位置，然后安装到本机各工具目录：
+
+```bash
+git clone https://github.com/hishanshi/shanshi-coding.git
+cd shanshi-coding
+./publish.sh -n install all
+./publish.sh install all
+```
+
+方式 B：直接 clone 到某个工具的 skills 目录。
 
 ### Codex
 
@@ -56,14 +65,35 @@ git clone https://github.com/hishanshi/shanshi-coding.git ~/.config/opencode/ski
 
 ## 更新
 
+如果通过 `publish.sh` 安装：
+
+```bash
+git pull
+./publish.sh install all
+```
+
+如果直接 clone 到工具目录：
+
 ```bash
 git -C ~/.agents/skills/shanshi-coding pull
 ```
 
 如果安装在 Claude Code 或 opencode 目录，请替换成对应路径。
 
+## 卸载
+
+如果通过 `publish.sh` 安装：
+
+```bash
+./publish.sh -n uninstall all
+./publish.sh uninstall all
+```
+
+卸载命令只删除带有本脚本管理标记的 `SKILL.md`。如果是直接 clone 到工具目录，请手动删除那个 clone 目录。
+
 ## 文件
 
 - `SKILL.md`：编码代理实际加载的 skill。
 - `README.md`：英文使用说明。
 - `README.zh-CN.md`：中文使用说明。
+- `publish.sh`：安装/卸载到 Claude Code、Codex 和 opencode 的本地脚本。

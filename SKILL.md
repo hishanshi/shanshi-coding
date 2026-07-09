@@ -9,24 +9,21 @@ This skill adds collaboration, validation, and risk-control rules for coding wor
 
 ## Activation Boundary
 
-- If this turn is authorized to eventually modify project files, use the loop below; investigation and planning may come first.
-- If the user only asks for review, explanation, lookup, path finding, or design discussion and has not authorized file edits, do not enter the execution flow.
+- Enter the work loop when this turn is authorized to eventually modify project files; investigation and planning may come first. Stay out of the execution flow for pure review, explanation, lookup, path finding, or design discussion without edit authorization.
 - If the user says "give me a plan first; change after confirmation", provide the plan and wait.
 - If the user says "plan first, then implement", "fix anything you find", or equivalent, proceed with this skill.
 
 ## Work Loop
 
 1. Align target: state goal, scope, constraints, and done criteria; ask only when ambiguity affects compatibility, performance, migration, external contracts, safety/security, or target environment.
-2. Read code: most failures come from wrong assumptions about system behavior; understand both the request and the running system, starting from files, symbols, errors, tests, callers, callees, data, config, types/contracts, and related tests.
-3. Propose approach: for impactful work, state implementation path, tradeoffs, affected surface, and validation; for low-risk local edits, proceed and note the assumption.
-4. Execute in small steps: make the smallest reasonable change that fits existing architecture, style, naming, and tests; if an assumption breaks, return to alignment.
-5. Validate and loop: check against the predeclared criteria; if it fails, fix or re-plan. Do not lower criteria at the end.
+2. Read code: most failures come from wrong assumptions about system behavior; understand both the request and the running system — files, symbols, errors, callers, callees, data, config, types/contracts, and related tests.
+3. Propose approach: for impactful work, state implementation path, tradeoffs, affected surface, and planned validation before editing. A low-risk local edit — single-file, copy-only, or no behavior change beyond the named target — may proceed directly with the assumption noted.
+4. Execute in small steps: before each edit, be able to say what behavior changes, who is affected, and how you will verify it; make the smallest reasonable change that fits existing architecture, style, naming, and tests; if an assumption breaks, return to alignment.
+5. Validate and loop: check against the predeclared criteria; if a check fails, fix or re-plan.
 
 ## Execution Discipline
 
-- Do not edit until you can say what behavior changes, who is affected, and how to verify it; narrow this for single-file or copy-only tasks.
-- Preserve user changes. Treat changes you did not make as user-owned; do not overwrite, revert, or reformat unrelated code.
-- Increase reading and validation with impact: shared APIs/components, data/state, permissions, security, concurrency, persistence, routing.
+- When a change touches shared APIs/components, data or state shape, permissions, security, concurrency, persistence, or routing: read the direct callers/consumers of what you change before editing, and run at least one validation beyond the scenario minimum (the consumers' tests, or one traced end-to-end path).
 - For UI/frontend, prefer existing components and design tokens; avoid hard-coded colors, spacing, type sizes, and broad style scope.
 - For long tasks, record progress in one place; on resume, read progress and diff before continuing.
 - After command failure, read the error and decide whether it is environment, dependency, permission, or product behavior before moving on.
@@ -52,13 +49,19 @@ Bug-fix supplements:
 - After fixing one instance, use `rg` / search for same-shaped issues; report unrelated findings rather than fixing them opportunistically.
 - After three failed hypotheses, hand off what was checked, what was ruled out, and what remains unknown; for reproducible regressions with a clear range, prefer `git bisect`.
 
-## Validation and Response
+## Validation
 
 - Derive tests from requirements, not from implementation. For bug fixes or complex new behavior, see the test fail before seeing it pass.
 - "No tests" means no new or automated tests; still perform the cheapest useful alternate validation. Skip all validation only when explicitly asked, and state the risk.
-- Say "verified" or "passed" only for commands, pages, or artifacts actually checked in this turn; otherwise say "inferred from code reading" or "not verified".
 - If validation is impossible, state why, what risk remains, and what alternate check was done.
-- Final response must say what changed, what was validated, and what remains unverified or needs user decision.
+
+## Closing Report (required)
+
+End every turn that changed files with these three parts; never omit one:
+
+- Changed: files touched and the behavior delta.
+- Validated: each check actually run this turn (command, test, page, or artifact) with its result. Use "verified" or "passed" only in this part, and only for checks that ran.
+- Unverified / needs decision: what was not checked, the remaining risk, and any decision left to the user; conclusions from code reading go here as "inferred from code reading", never under Validated. Write "none" if empty.
 
 ## Flexibility
 
@@ -67,7 +70,7 @@ The default loop and disciplines may be adjusted for explicit user instructions,
 ## Guardrails
 
 - Read before writing.
-- Preserve user changes.
-- Do not lower acceptance criteria just to finish the implementation.
+- Preserve user changes: treat changes you did not make as user-owned; do not overwrite, revert, or reformat unrelated code.
+- Do not lower acceptance criteria to get to done.
 - Do not present inference as verification.
 - Do not expand scope opportunistically; every file, dependency, and abstraction must trace back to the current request or agreed acceptance criteria.

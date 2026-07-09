@@ -28,6 +28,7 @@ Do not use it for pure review, explanation, lookup, path finding, or design disc
 - Validate according to the task type.
 - Never claim tests or verification passed unless they actually ran.
 - Treat bug fixes as root-cause work, not symptom patching.
+- End every change with a closing report: what changed, what was validated, what remains unverified.
 
 ### Install
 

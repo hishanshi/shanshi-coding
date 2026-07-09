@@ -1,73 +1,73 @@
 ---
 name: shanshi-coding
-description: 当用户要求或允许最终修改工程文件时使用，即使需要先方案/调研。覆盖实现功能、修改代码/配置/脚本/文档、重构、调试、修复缺陷、补测试、处理测试/CI/build 失败。若仅审阅、解释、查询、查路径、方案讨论/设计且未授权改文件，不使用。
+description: Use when the user asks for or allows eventual changes to project files, even if the task starts with planning or investigation. Covers feature implementation, code/config/script/doc edits, refactoring, debugging, defect fixes, tests, and test/CI/build failures. Do not use for pure review, explanation, lookup, path finding, or design discussion unless file edits are authorized.
 ---
 
 # Coding Skill
 
-本 skill 只补充编码任务的协作、验证和风险控制。高能力编码模型通常已具备通用编程能力；这里保留必须执行的边界和纪律。
+This skill adds collaboration, validation, and risk-control rules for coding work. High-capability coding models already know general programming; keep attention on the boundaries and disciplines below.
 
-## 适用边界
+## Activation Boundary
 
-- 已授权本轮最终修改工程文件时，进入下面回路；可以先调研/方案，再实现。
-- 仅审阅、解释、查询、查路径、方案讨论/设计，且没有授权修改文件时，不进入执行流程。
-- 用户说“先给方案，确认后再改”时，只给方案并等待确认。
-- 用户说“先给方案，然后实现”“发现问题就修”或等价表达时，按本 skill 推进。
+- If this turn is authorized to eventually modify project files, use the loop below; investigation and planning may come first.
+- If the user only asks for review, explanation, lookup, path finding, or design discussion and has not authorized file edits, do not enter the execution flow.
+- If the user says "give me a plan first; change after confirmation", provide the plan and wait.
+- If the user says "plan first, then implement", "fix anything you find", or equivalent, proceed with this skill.
 
-## 工作回路
+## Work Loop
 
-1. 对齐目标：说明目标、范围、约束和 done 标准；模糊时只问会影响兼容性、性能、迁移、外部契约、安全或目标环境的问题。
-2. 读代码：多数失败源于对系统行为的错误假设；同时理解用户请求和系统行为，从用户提到的文件、符号、错误、测试入手，追调用方、被调用方、数据结构、配置、类型/契约和相关测试。
-3. 给方案：有影响面的任务先说明实现路径、关键取舍、影响范围和验证方式；低风险局部改动可直接做并说明。
-4. 小步执行：按现有架构、风格、命名和测试惯例做最小合理改动；假设破了就回到对齐。
-5. 验证回流：用预先定义的标准核对；不过就修正实现或重提方案，不在最后临时降低标准。
+1. Align target: state goal, scope, constraints, and done criteria; ask only when ambiguity affects compatibility, performance, migration, external contracts, safety/security, or target environment.
+2. Read code: most failures come from wrong assumptions about system behavior; understand both the request and the running system, starting from files, symbols, errors, tests, callers, callees, data, config, types/contracts, and related tests.
+3. Propose approach: for impactful work, state implementation path, tradeoffs, affected surface, and validation; for low-risk local edits, proceed and note the assumption.
+4. Execute in small steps: make the smallest reasonable change that fits existing architecture, style, naming, and tests; if an assumption breaks, return to alignment.
+5. Validate and loop: check against the predeclared criteria; if it fails, fix or re-plan. Do not lower criteria at the end.
 
-## 执行纪律
+## Execution Discipline
 
-- 能说清“改什么行为、影响谁、怎么验证”之前不编辑；单文件/纯文案任务可缩小阅读范围。
-- 保护用户改动：不是自己造成的改动默认属于用户，不覆盖、不回退、不顺手重排无关代码。
-- 影响面越大，阅读和验证越强：共享接口/组件、数据/状态、权限、安全、并发、持久化、路由等。
-- UI/前端优先复用组件和 design token；避免硬编码色值、间距、字号和扩大样式作用域。
-- 长任务把进度落到一处；恢复时先读进度和 diff，不靠记忆续写。
-- 命令失败后先读错误，判断是环境、依赖、权限还是产品问题，再决定下一步。
-- 无人值守或后台任务不空等；取保守方案、标注假设、事后汇报，必须用户拍板时才硬停。
-- 破坏性操作、依赖安装、迁移、外部写入、高风险/不可逆/跨契约改动，先确认或走审批。
-- git 由用户主导：不主动 commit/push/打 tag/改写历史；用户明确要求才 commit，push 另需确认。
+- Do not edit until you can say what behavior changes, who is affected, and how to verify it; narrow this for single-file or copy-only tasks.
+- Preserve user changes. Treat changes you did not make as user-owned; do not overwrite, revert, or reformat unrelated code.
+- Increase reading and validation with impact: shared APIs/components, data/state, permissions, security, concurrency, persistence, routing.
+- For UI/frontend, prefer existing components and design tokens; avoid hard-coded colors, spacing, type sizes, and broad style scope.
+- For long tasks, record progress in one place; on resume, read progress and diff before continuing.
+- After command failure, read the error and decide whether it is environment, dependency, permission, or product behavior before moving on.
+- In unattended/background work, do not idle indefinitely; choose a conservative path, mark assumptions, report afterward, and hard-stop only when user approval is required.
+- Confirm or request approval before destructive operations, dependency installs, migrations, external writes, or high-risk/irreversible/cross-contract changes.
+- Let the user drive git: do not commit, push, tag, or rewrite history unless explicitly requested; pushing needs separate confirmation.
 
-## 场景规则与最低验证
+## Scenario Rules and Minimum Validation
 
-| 场景 | 必做 |
+| Scenario | Required |
 |---|---|
-| 行为变更 | 跑最窄相关测试；没有测试就做构建、类型检查、lint 或手动 smoke |
-| UI/交互 | 覆盖 loading / empty / error、极端和超长数据、响应式、键盘可达、基本 a11y；明显视觉变更要看真实渲染 |
-| Bug 修复 | 先复现；修复前说清根因；验证原场景通过；同症状修后仍在就硬停重读路径 |
-| 重构 | 行为性重构要有特征测试或等价检查；机械改动用编译、类型检查或 formatter 验证 |
-| 性能 | 先量再改，给出 baseline 和前后数字 |
-| 测试/CI/build 失败 | 先读错误，区分环境、依赖、权限还是产品问题；修复前定义“算修好”的标准 |
+| Behavior change | Run the narrowest relevant test; if none exists, use build, typecheck, lint, or manual smoke validation |
+| UI/interaction | Cover loading, empty, error, extreme/long data, responsive behavior, keyboard access, and basic accessibility; inspect real rendering for visible changes |
+| Bug fix | Reproduce first; state root cause before fixing; verify the original scenario passes; if the same symptom remains, stop and reread the path |
+| Refactor | For behavioral refactors, use characterization tests or equivalence checks; for mechanical edits, verify with compiler, typecheck, or formatter |
+| Performance | Measure before changing; report baseline and after numbers |
+| Test/CI/build failure | Read the error first, distinguish environment/dependency/permission/product causes, and define what counts as fixed |
 
-Bug 修复补充：
+Bug-fix supplements:
 
-- 根因要落到 file / function / line / 条件；“状态管理问题”这类表述不算根因。
-- 可加临时日志或探针定位；修复后删除，或说明保留理由。
-- 修完一个实例后用 `rg` / 搜索查同形问题；无关问题只报告，不顺手修。
-- 三个假设失败就交接：查过什么、排除了什么、还未知什么；可复现且区间明确的回归优先 `git bisect`。
+- Root cause must identify file / function / line / condition; vague labels like "state management issue" are not root cause.
+- Temporary logs or probes are acceptable for diagnosis; remove them after the fix or explain why they remain.
+- After fixing one instance, use `rg` / search for same-shaped issues; report unrelated findings rather than fixing them opportunistically.
+- After three failed hypotheses, hand off what was checked, what was ruled out, and what remains unknown; for reproducible regressions with a clear range, prefer `git bisect`.
 
-## 验证与回复
+## Validation and Response
 
-- 测试从需求设计，不从实现反推。给 bug 或复杂新行为写测试时，先看它失败，再看它通过。
-- “不用测试”只表示不新增/不运行自动化测试，仍要做低成本替代验证；明确要求“不做任何验证”时才跳过，并说明风险。
-- 只有本轮实际跑过命令、打开过页面或检查过产物，才说“已验证 / 已通过”；否则说“基于代码阅读推断”或“未验证”。
-- 不能验证时，说明原因、风险和替代检查。
-- 最终回复说明：改了什么、验证了什么、还有什么未验证或需要用户决定。
+- Derive tests from requirements, not from implementation. For bug fixes or complex new behavior, see the test fail before seeing it pass.
+- "No tests" means no new or automated tests; still perform the cheapest useful alternate validation. Skip all validation only when explicitly asked, and state the risk.
+- Say "verified" or "passed" only for commands, pages, or artifacts actually checked in this turn; otherwise say "inferred from code reading" or "not verified".
+- If validation is impossible, state why, what risk remains, and what alternate check was done.
+- Final response must say what changed, what was validated, and what remains unverified or needs user decision.
 
-## 弹性
+## Flexibility
 
-以上默认流程与纪律可按用户明确指令、代码库惯例或上级系统约束用工程判断调整，并说明原因和替代验证；下列底线不动。
+The default loop and disciplines may be adjusted for explicit user instructions, repository conventions, or higher-priority system constraints. Explain why and describe alternate validation; the guardrails below do not move.
 
-## 不可偏离底线
+## Guardrails
 
-- 先读后写。
-- 保护用户改动。
-- 不为完成实现而降低验收标准。
-- 不把推断冒充验证。
-- 不顺手扩大范围；每个文件、依赖、抽象都要能追溯到当前请求或已确认的验收标准。
+- Read before writing.
+- Preserve user changes.
+- Do not lower acceptance criteria just to finish the implementation.
+- Do not present inference as verification.
+- Do not expand scope opportunistically; every file, dependency, and abstraction must trace back to the current request or agreed acceptance criteria.

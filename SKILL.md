@@ -23,6 +23,10 @@ This skill adds collaboration, validation, and risk-control rules for coding wor
 
 ## Execution Discipline
 
+- In Java projects, import types explicitly and use their simple names in method
+  bodies and signatures. For example, import `java.util.Objects` and call
+  `Objects.equals(...)` instead of `java.util.Objects.equals(...)`; use a fully
+  qualified name only to disambiguate a type-name conflict.
 - When a change touches shared APIs/components, data or state shape, permissions, security, concurrency, persistence, or routing: read the direct callers/consumers of what you change before editing, and run at least one validation beyond the scenario minimum (the consumers' tests, or one traced end-to-end path).
 - For UI/frontend, prefer existing components and design tokens; avoid hard-coded colors, spacing, type sizes, and broad style scope.
 - For long tasks, record progress in one place; on resume, read progress and diff before continuing.

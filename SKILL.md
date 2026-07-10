@@ -17,7 +17,7 @@ This skill adds collaboration, validation, and risk-control rules for coding wor
 
 1. Align target: state goal, scope, constraints, and done criteria; ask only when ambiguity affects compatibility, performance, migration, external contracts, safety/security, or target environment.
 2. Read code: most failures come from wrong assumptions about system behavior; understand both the request and the running system — files, symbols, errors, callers, callees, data, config, types/contracts, and related tests.
-3. Propose approach: for impactful work, state implementation path, tradeoffs, affected surface, and planned validation before editing. A low-risk local edit — single-file, copy-only, or no behavior change beyond the named target — may proceed directly with the assumption noted.
+3. Propose approach: for impactful work, state implementation path, tradeoffs, affected surface, and planned validation before editing. A low-impact, reversible local edit that does not touch shared contracts, security, persisted data, migrations, or external systems may proceed directly with the assumption noted; file count alone does not determine risk.
 4. Execute in small steps: before each edit, be able to say what behavior changes, who is affected, and how you will verify it; make the smallest reasonable change that fits existing architecture, style, naming, and tests; if an assumption breaks, return to alignment.
 5. Validate and loop: check against the predeclared criteria; if a check fails, fix or re-plan.
 
@@ -36,7 +36,7 @@ This skill adds collaboration, validation, and risk-control rules for coding wor
 | Scenario | Required |
 |---|---|
 | Behavior change | Run the narrowest relevant test; if none exists, use build, typecheck, lint, or manual smoke validation |
-| UI/interaction | Cover loading, empty, error, extreme/long data, responsive behavior, keyboard access, and basic accessibility; inspect real rendering for visible changes |
+| UI/interaction | Inspect real rendering for visible changes; exercise the affected states and responsive/extreme-data cases; for interaction changes, check relevant loading/empty/error behavior, keyboard access, and basic accessibility. If real rendering cannot be inspected, report it under Unverified / needs decision |
 | Bug fix | Reproduce first; state root cause before fixing; verify the original scenario passes; if the same symptom remains, stop and reread the path |
 | Refactor | For behavioral refactors, use characterization tests or equivalence checks; for mechanical edits, verify with compiler, typecheck, or formatter |
 | Performance | Measure before changing; report baseline and after numbers |
@@ -44,10 +44,10 @@ This skill adds collaboration, validation, and risk-control rules for coding wor
 
 Bug-fix supplements:
 
-- Root cause must identify file / function / line / condition; vague labels like "state management issue" are not root cause.
+- State the most specific evidence-supported trigger and mechanism; when the cause is code-local, identify the file, symbol, condition, and useful line location. Vague labels like "state management issue" are not root cause.
 - Temporary logs or probes are acceptable for diagnosis; remove them after the fix or explain why they remain.
 - After fixing one instance, use `rg` / search for same-shaped issues; report unrelated findings rather than fixing them opportunistically.
-- After three failed hypotheses, hand off what was checked, what was ruled out, and what remains unknown; for reproducible regressions with a clear range, prefer `git bisect`.
+- After three failed hypotheses, stop guessing and re-baseline: summarize what was checked, ruled out, and remains unknown, then continue from evidence or ask for missing information or approval. For reproducible regressions with a clear range, prefer `git bisect`.
 
 ## Validation
 
@@ -57,11 +57,20 @@ Bug-fix supplements:
 
 ## Closing Report (required)
 
-End every turn that changed files with these three parts; never omit one:
+End every turn that changed files with exactly these headings, in this order; replace the prompts with task-specific content and never omit a heading:
 
-- Changed: files touched and the behavior delta.
-- Validated: each check actually run this turn (command, test, page, or artifact) with its result. Use "verified" or "passed" only in this part, and only for checks that ran.
-- Unverified / needs decision: what was not checked, the remaining risk, and any decision left to the user; conclusions from code reading go here as "inferred from code reading", never under Validated. Write "none" if empty.
+```markdown
+**Changed**
+- <files touched and behavior delta>
+
+**Validated**
+- <checks actually run this turn and their results>
+
+**Unverified / needs decision**
+- <unchecked items, remaining risk, and user decisions; or "none">
+```
+
+Use "verified" or "passed" only under Validated and only for checks that ran. Put conclusions from code reading under Unverified / needs decision as "inferred from code reading", along with any unavailable real-rendering check.
 
 ## Flexibility
 

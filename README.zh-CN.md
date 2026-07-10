@@ -41,6 +41,8 @@ cd shanshi-coding
 ./publish.sh install all
 ```
 
+默认情况下，`publish.sh` 会跳过已有但不受它管理的 `SKILL.md`。只有在明确需要替换该文件时才使用 `--force`。
+
 方式 B：直接 clone 到某个工具的 skills 目录。
 
 ### Codex
@@ -63,6 +65,8 @@ git clone https://github.com/hishanshi/shanshi-coding.git ~/.claude/skills/shans
 mkdir -p ~/.config/opencode/skills
 git clone https://github.com/hishanshi/shanshi-coding.git ~/.config/opencode/skills/shanshi-coding
 ```
+
+如果从直接 clone 的工具目录运行 `publish.sh`，脚本会因为源文件和目标文件相同而跳过该工具，但仍可为其他工具安装。
 
 ## 更新
 

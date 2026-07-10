@@ -41,6 +41,8 @@ cd shanshi-coding
 ./publish.sh install all
 ```
 
+By default, `publish.sh` skips an existing `SKILL.md` that it does not manage. Use `--force` only when you intentionally want to replace that file.
+
 Option B: clone it directly into one tool's skills directory.
 
 #### Codex
@@ -63,6 +65,8 @@ git clone https://github.com/hishanshi/shanshi-coding.git ~/.claude/skills/shans
 mkdir -p ~/.config/opencode/skills
 git clone https://github.com/hishanshi/shanshi-coding.git ~/.config/opencode/skills/shanshi-coding
 ```
+
+When `publish.sh` runs from a directly cloned tool directory, it skips that tool because the source and destination are the same file. It can still install the skill for the other tools.
 
 ### Update
 

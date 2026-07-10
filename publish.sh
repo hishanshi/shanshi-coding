@@ -31,7 +31,7 @@ Usage:
 
 Options:
   -n, --dry-run   Preview install/uninstall without writing
-  --force         Uninstall even when the installed SKILL.md is not marked as managed
+  --force         Replace or remove a SKILL.md not marked as managed
   -h, --help      Show help
 
 Examples:
@@ -117,6 +117,14 @@ install_tool() {
   local tool="$1" root dest tmp lines
   root="$(tool_dir "$tool")"
   dest="$root/$SKILL/SKILL.md"
+  if [ -e "$dest" ] && [ "$SKILL_FILE" -ef "$dest" ]; then
+    log "  skip $tool -> $dest (source and destination are the same file)"
+    return 0
+  fi
+  if [ -e "$dest" ] && [ "$FORCE" != 1 ] && ! is_managed "$dest"; then
+    log "  skip $tool -> $dest (not marked as managed; use --force to replace)"
+    return 0
+  fi
   tmp="$(mktemp)"
   {
     cat "$SKILL_FILE"

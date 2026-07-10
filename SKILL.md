@@ -23,17 +23,22 @@ This skill adds collaboration, validation, and risk-control rules for coding wor
 
 ## Execution Discipline
 
+- Prefer expressive names and clear structure over comments that restate the
+  code. For complex or non-obvious logic, add concise comments explaining intent,
+  constraints, invariants, edge cases, or tradeoffs, and keep them updated.
 - In Java projects, import types explicitly and use their simple names in method
-  bodies and signatures. For example, import `java.util.Objects` and call
-  `Objects.equals(...)` instead of `java.util.Objects.equals(...)`; use a fully
-  qualified name only to disambiguate a type-name conflict.
-- When a change touches shared APIs/components, data or state shape, permissions, security, concurrency, persistence, or routing: read the direct callers/consumers of what you change before editing, and run at least one validation beyond the scenario minimum (the consumers' tests, or one traced end-to-end path).
-- For UI/frontend, prefer existing components and design tokens; avoid hard-coded colors, spacing, type sizes, and broad style scope.
-- For long tasks, record progress in one place; on resume, read progress and diff before continuing.
-- After command failure, read the error and decide whether it is environment, dependency, permission, or product behavior before moving on.
-- In unattended/background work, do not idle indefinitely; choose a conservative path, mark assumptions, report afterward, and hard-stop only when user approval is required.
-- Confirm or request approval before destructive operations, dependency installs, migrations, external writes, or high-risk/irreversible/cross-contract changes.
-- Let the user drive git: do not commit, push, tag, or rewrite history unless explicitly requested; pushing needs separate confirmation.
+  bodies and signatures; use fully qualified names only to resolve conflicts.
+- For changes affecting shared APIs/components, data shape, permissions,
+  security, concurrency, persistence, or routing, inspect direct consumers before
+  editing and run one additional consumer-level or end-to-end validation.
+- For UI/frontend, prefer existing components and design tokens; avoid hard-coded
+  visual values and broad style scope.
+- For long or unattended work, record resumable progress, choose conservative
+  assumptions, and stop only when user approval is required.
+- Request approval before destructive operations, dependency installs,
+  migrations, external writes, or other high-risk or irreversible changes.
+- Let the user drive git: do not commit, push, tag, or rewrite history unless
+  explicitly requested; pushing requires separate confirmation.
 
 ## Scenario Rules and Minimum Validation
 
@@ -41,17 +46,21 @@ This skill adds collaboration, validation, and risk-control rules for coding wor
 |---|---|
 | Behavior change | Run the narrowest relevant test; if none exists, use build, typecheck, lint, or manual smoke validation |
 | UI/interaction | Inspect real rendering for visible changes; exercise the affected states and responsive/extreme-data cases; for interaction changes, check relevant loading/empty/error behavior, keyboard access, and basic accessibility. If real rendering cannot be inspected, report it under Unverified / needs decision |
-| Bug fix | Reproduce first; state root cause before fixing; verify the original scenario passes; if the same symptom remains, stop and reread the path |
+| Bug fix | Follow the bug-fix workflow below |
 | Refactor | For behavioral refactors, use characterization tests or equivalence checks; for mechanical edits, verify with compiler, typecheck, or formatter |
 | Performance | Measure before changing; report baseline and after numbers |
 | Test/CI/build failure | Read the error first, distinguish environment/dependency/permission/product causes, and define what counts as fixed |
 
-Bug-fix supplements:
+Bug-fix workflow:
 
-- State the most specific evidence-supported trigger and mechanism; when the cause is code-local, identify the file, symbol, condition, and useful line location. Vague labels like "state management issue" are not root cause.
-- Temporary logs or probes are acceptable for diagnosis; remove them after the fix or explain why they remain.
-- After fixing one instance, use `rg` / search for same-shaped issues; report unrelated findings rather than fixing them opportunistically.
-- After three failed hypotheses, stop guessing and re-baseline: summarize what was checked, ruled out, and remains unknown, then continue from evidence or ask for missing information or approval. For reproducible regressions with a clear range, prefer `git bisect`.
+- Reproduce the issue, identify the specific trigger and mechanism, then verify
+  the original scenario after fixing it. When the cause is code-local, name the
+  file, symbol, and condition.
+- Temporary probes are allowed during diagnosis but must be removed afterward.
+  Search for same-shaped issues after the fix; report unrelated findings without
+  changing them.
+- After three failed hypotheses, re-baseline what is known, ruled out, and still
+  unknown. For reproducible regressions with a clear range, prefer `git bisect`.
 
 ## Validation
 

@@ -1,75 +1,57 @@
 ---
 name: shanshi-coding
-description: Use when the current task authorizes modifying local project files for feature implementation, bug fixes, refactoring, code/config/script/doc/test updates, or test/CI/build remediation. Enforces scoped execution, risk-aware approval boundaries, protection of existing user changes, requirement-derived validation, and evidence-based closing reports.
+description: Use only when the current turn explicitly authorizes local project edits to change software behavior or an engineering control surface, such as features, bug fixes, refactoring, APIs or data contracts, runtime/build/CI configuration, scripts, tests, or failure remediation. Include documentation only when required by that engineering change. Do not use for questions, reviews, recommendations, standalone content or record maintenance, authorization from an earlier turn, or low-risk text/metadata edits with no engineering effect. Enforces scoped edits, reuse of existing contracts, risk-based validation, protection of user changes, and evidence-based reporting.
 ---
 
 # Coding Skill
 
-Focus authorized coding work on the requested outcome, permission boundaries, and validation evidence; choose the most efficient path that respects them.
+Deliver the authorized software outcome with the smallest coherent change and validation proportional to its risk.
 
-## Authorization and Risk
+## Authorization and Scope
 
-- Apply authorization to the current layer of work. If the user requires confirmation after a plan, stop after the plan. For a request to change, build, or fix, perform safe in-scope local edits and validation without asking again.
-- Ask only when unresolved ambiguity materially affects compatibility, performance, migrations, external contracts, security, persisted data, or the target environment.
-- Require confirmation before destructive, irreversible, external, costly, or materially scope-expanding actions. Installing declared dependencies is a normal local step; adding, upgrading, or replacing one must trace to the request and needs confirmation when the impact is material.
-- Do not commit, push, tag, or rewrite history unless explicitly requested. An explicit request authorizes the named Git action unless a higher-priority policy requires another approval.
+- Treat authorization as current-turn and outcome-specific. A request to implement, change, fix, or refactor authorizes safe in-scope local edits and validation.
+- Treat questions, diagnosis, review, comparison, and phrasing such as “是否需要”, “有没有问题”, “为什么”, or “应该怎么调整” as analysis-only. Do not edit files unless the current turn also asks for the change. Authorization from an earlier turn does not carry into a later question.
+- Ask when unresolved ambiguity materially affects compatibility, migrations, external contracts, security, persisted data, or the target environment.
+- Require confirmation before destructive, irreversible, external, costly, or materially scope-expanding actions, including material dependency changes.
+- Do not commit, push, tag, or rewrite history unless explicitly requested. An explicit request authorizes only the named Git action unless a higher-priority policy requires another approval.
 
 ## Work Loop
 
-1. **Align:** determine the goal, scope, constraints, and completion criteria.
-2. **Inspect:** understand relevant behavior, contracts, consumers, tests, and existing user changes before editing.
-3. **Change:** make the smallest coherent change that fits the repository's architecture and conventions. For impactful work, communicate the approach, affected surface, tradeoffs, and planned validation first. Low-risk, reversible edits may proceed directly. Judge risk by impact, not file count.
-4. **Validate and iterate:** check the result against the completion criteria. If a check fails or an assumption breaks, fix the issue or re-plan from the new evidence.
+1. **Align:** establish the outcome, scope, constraints, and observable completion criteria. For cross-layer rules or metrics, establish source fields, filters, state semantics, and output contracts first.
+2. **Inspect:** read relevant implementation, tests, consumers, conventions, and user changes. Before adding an endpoint, action, state, schema, or abstraction, search for the same domain concept and reuse a compatible contract; do not invent a parallel flow from an assumption.
+3. **Change:** make the smallest coherent architectural change. Explain the approach and validation before impactful work; proceed directly for low-risk reversible work.
+4. **Validate:** check the requested behavior. If evidence breaks an assumption, correct or re-plan.
 
-## Execution Discipline
+## Execution Guardrails
 
-- For changes affecting shared APIs/components, data shape, permissions, security, concurrency, persistence, or routing, inspect direct consumers before editing and run one additional consumer-level or end-to-end validation.
-- For UI/frontend, prefer existing components and design tokens; avoid hard-coded visual values and broad style scope.
-- For long or unattended work, record resumable progress, choose conservative assumptions, and continue until completion or a genuine approval boundary.
+- Judge risk by impact, not file count. Inspect consumers before changing shared contracts, data shapes, permissions, security, persistence, routing, or state transitions.
+- Preserve user-owned changes; do not overwrite, revert, or reformat unrelated work.
+- Keep every changed file, dependency, and abstraction traceable to the requested outcome; do not lower acceptance criteria or expand scope opportunistically.
+- For UI, prefer existing components and tokens; avoid broad style scope and unexplained hard-coded values.
 
-## Scenario Rules and Minimum Validation
+## Risk-Based Validation
 
-| Scenario | Required |
+Choose the cheapest check that can detect the plausible failure; escalate only when risk or evidence warrants it.
+
+| Change | Minimum validation |
 |---|---|
-| Behavior change | Run the narrowest relevant test; if none exists, use build, typecheck, lint, or manual smoke validation |
-| UI/interaction | Inspect real rendering; exercise affected states, responsive/extreme-data cases, loading/empty/error behavior, keyboard access, and basic accessibility as relevant. If rendering cannot be inspected, report it as unverified |
-| Bug fix | Follow the bug-fix workflow below |
-| Refactor | For behavioral refactors, use characterization tests or equivalence checks; for mechanical edits, verify with compiler, typecheck, or formatter |
-| Performance | Measure before changing; report baseline and after numbers |
-| Test/CI/build failure | Read the error first, distinguish environment/dependency/permission/product causes, and define what counts as fixed |
+| Mechanical text/format/metadata | Focused diff; syntax or format check only when relevant |
+| Local behavior | Narrowest test; otherwise focused typecheck, lint, build, or smoke check |
+| Shared or cross-layer contract | Direct consumers plus one focused integration or end-to-end path |
+| Material UI layout/interaction/routing | Real rendering and relevant responsive, state, keyboard, and accessibility cases |
+| Content-only UI | Render only when content length, structure, or styling creates credible layout risk |
+| Refactor | Characterization/equivalence for behavior; compile, typecheck, format, or diff for mechanics |
+| Performance | Measure before changing and report comparable before/after results |
+| Test/CI/build failure | Classify the error, fix its cause, then rerun the check that demonstrates recovery |
 
-For bug fixes:
-
-- Reproduce the issue when practical, identify the specific trigger and mechanism, then verify the original scenario after fixing it. When the cause is code-local, name the file, symbol, and condition.
-- Temporary probes are allowed during diagnosis but must be removed afterward. Search for same-shaped issues after the fix; report unrelated findings without changing them.
-- After three failed hypotheses, re-baseline what is known, ruled out, and still unknown. For reproducible regressions with a clear range, prefer `git bisect`.
-
-## Validation
-
-- Derive checks from requirements, not from implementation. For regression-prone bug fixes or complex behavior, prefer a failing regression test or exact reproduction before the fix. If that is impractical, state why and perform the strongest useful alternate check.
-- "No tests" means no new or automated tests; still perform the cheapest useful alternate validation. Skip all validation only when explicitly asked, and state the risk.
-- If validation is impossible, state why, what risk remains, and what alternate check was done.
+- For bugs, reproduce when practical, identify the mechanism, and verify the original scenario. Prefer a regression test or exact reproduction for complex behavior.
+- “No tests” still requires the cheapest useful alternate check. Skip all validation only when explicitly asked, and state the risk.
+- Batch unchanged expensive checks after adjacent low-risk tweaks at a milestone or before closing.
+- If validation is unavailable, state what remains unverified, why, the risk, and any alternate check performed.
+- After three failed hypotheses, re-baseline what is known, ruled out, and unknown. For a reproducible regression with a clear range, prefer `git bisect`.
 
 ## Closing Report
 
-Every turn that changed files must communicate these three information categories. Use the headings below by default. If the user or repository requires another format, preserve the same categories in that format.
+Report what changed, checks actually run, and remaining uncertainty. Use `Changed`, `Validated`, and `Unverified / needs decision` headings for substantial work; use one to three sentences for a small low-risk change. Say “verified” or “passed” only for checks run, and label reading-based conclusions as inferred.
 
-```markdown
-**Changed**
-- <files touched and behavior delta>
-
-**Validated**
-- <checks actually run this turn and their results>
-
-**Unverified / needs decision**
-- <unchecked items, remaining risk, and user decisions; or "none">
-```
-
-Use "verified" or "passed" only for checks that actually ran. Put conclusions from code reading under Unverified / needs decision as "inferred from code reading", along with any unavailable real-rendering check.
-
-## Guardrails
-
-- Preserve user changes: treat changes you did not make as user-owned; do not overwrite, revert, or reformat unrelated code.
-- Do not lower acceptance criteria to get to done.
-- Do not expand scope opportunistically; every file, dependency, and abstraction must trace back to the current request or agreed acceptance criteria.
-- Explicit user instructions, repository conventions, and higher-priority constraints may change the method or report format, but not permission boundaries, validation honesty, or protection of user work.
+Explicit user instructions, repository conventions, and higher-priority constraints may change the method or report format, but not permission boundaries, validation honesty, or protection of user work.

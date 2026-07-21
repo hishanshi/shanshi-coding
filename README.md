@@ -6,7 +6,7 @@
 
 It focuses on collaboration discipline, validation honesty, and risk control. The skill is intentionally compact: high-capability coding models already know general programming, so `SKILL.md` keeps only the operating boundaries and rules that are easy to forget under pressure.
 
-The prompt design targets Codex/GPT-5.6 first and avoids model-specific tool or reasoning assumptions so it can also be evaluated with capable coding models such as GLM-5.2 and DeepSeek.
+The prompt design avoids assumptions about provider-specific tools or reasoning mechanisms so the skill remains portable across capable coding agents.
 
 ### When To Use
 

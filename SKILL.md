@@ -1,57 +1,56 @@
 ---
 name: shanshi-coding
-description: Use only when the current turn explicitly authorizes local project edits to change software behavior or an engineering control surface, such as features, bug fixes, refactoring, APIs or data contracts, runtime/build/CI configuration, scripts, tests, or failure remediation. Include documentation only when required by that engineering change. Do not use for questions, reviews, recommendations, standalone content or record maintenance, authorization from an earlier turn, or low-risk text/metadata edits with no engineering effect. Enforces scoped edits, reuse of existing contracts, risk-based validation, protection of user changes, and evidence-based reporting.
+description: 仅在当前轮次明确要求修改本地项目，且目标是改变软件行为或工程控制面时使用，例如功能实现、缺陷修复、重构、接口或数据契约、运行或构建或持续集成配置、脚本、测试以及故障修复；明确要求的提交、合并、推送等版本控制操作也适用。文档仅在它是该工程变更的必要部分时纳入。提问、诊断、评审、建议、独立内容或资料维护、只沿用上一轮授权，以及不影响工程行为的低风险文字或元数据修改均不触发；这些请求本身也不授权修改文件。用于约束修改范围、复用既有契约、按风险验证、保护用户改动并基于证据汇报。
 ---
 
-# Coding Skill
+# 编码执行
 
-Deliver the authorized software outcome with the smallest coherent change and validation proportional to its risk.
+以最小且连贯的改动交付已授权的软件结果，并按实际风险验证。
 
-## Authorization and Scope
+## 授权与范围
 
-- Treat authorization as current-turn and outcome-specific. A request to implement, change, fix, or refactor authorizes safe in-scope local edits and validation.
-- Treat questions, diagnosis, review, comparison, and phrasing such as “是否需要”, “有没有问题”, “为什么”, or “应该怎么调整” as analysis-only. Do not edit files unless the current turn also asks for the change. Authorization from an earlier turn does not carry into a later question.
-- Ask when unresolved ambiguity materially affects compatibility, migrations, external contracts, security, persisted data, or the target environment.
-- Require confirmation before destructive, irreversible, external, costly, or materially scope-expanding actions, including material dependency changes.
-- Do not commit, push, tag, or rewrite history unless explicitly requested. An explicit request authorizes only the named Git action unless a higher-priority policy requires another approval.
+- 只接受当前轮次、针对当前结果的明确授权。“实现、修改、修复、重构、提交、合并或推送”授权对应的安全范围内操作。
+- 将提问、诊断、评审、比较以及“是否需要、有没有问题、为什么、应该怎么调整”等表述视为只读请求；除非同一轮同时明确要求实施，否则不得修改文件。上一轮授权不得自动延续。
+- 仅在未解决的歧义会实质影响兼容性、迁移、外部契约、安全、持久化数据或目标环境时询问。
+- 破坏性、不可逆、外部、付费或明显扩展范围的操作，以及影响较大的依赖变更，必须先确认。
+- 未明确要求时，不得提交、推送、打标签或改写历史；明确要求只授权点名的版本控制操作。
 
-## Work Loop
+## 工作流程
 
-1. **Align:** establish the outcome, scope, constraints, and observable completion criteria. For cross-layer rules or metrics, establish source fields, filters, state semantics, and output contracts first.
-2. **Inspect:** read relevant implementation, tests, consumers, conventions, and user changes. Before adding an endpoint, action, state, schema, or abstraction, search for the same domain concept and reuse a compatible contract; do not invent a parallel flow from an assumption.
-3. **Change:** make the smallest coherent architectural change. Explain the approach and validation before impactful work; proceed directly for low-risk reversible work.
-4. **Validate:** check the requested behavior. If evidence breaks an assumption, correct or re-plan.
+1. **对齐：** 明确目标、范围、约束和可观察的完成标准。跨层业务规则或指标先确认来源字段、过滤条件、状态语义和输出契约。
+2. **检查：** 阅读相关实现、测试、调用方、仓库约定和用户现有改动。新增接口、动作、状态、结构或抽象前，先搜索相同业务概念并复用兼容契约，不得凭假设另建平行流程。
+3. **修改：** 做符合现有架构的最小连贯改动。高影响工作先说明方案、影响面和验证方法；低风险可逆改动直接执行。
+4. **验证：** 按需求而不是实现细节检查结果。证据推翻假设时，先纠正或重新规划，不得继续叠加补丁。
 
-## Execution Guardrails
+## 执行约束
 
-- Judge risk by impact, not file count. Inspect consumers before changing shared contracts, data shapes, permissions, security, persistence, routing, or state transitions.
-- Preserve user-owned changes; do not overwrite, revert, or reformat unrelated work.
-- Keep every changed file, dependency, and abstraction traceable to the requested outcome; do not lower acceptance criteria or expand scope opportunistically.
-- For UI, prefer existing components and tokens; avoid broad style scope and unexplained hard-coded values.
+- 按行为和运行影响判断风险，不按文件数量判断。修改共享契约、数据结构、权限、安全、持久化、路由或状态流转前，检查直接调用方。
+- 保留用户已有改动，不得覆盖、回退或格式化无关内容。
+- 每个文件、依赖和抽象都必须能追溯到当前目标；不得降低验收标准或顺手扩展范围。
+- 前端优先使用既有组件和设计令牌，避免扩大样式作用域或加入无法解释的固定值。
+- 一轮包含多个模块或多项独立变化时，先划分里程碑并锁定当前里程碑的契约，再开始大范围修改。
 
-## Risk-Based Validation
+## 按风险验证
 
-Choose the cheapest check that can detect the plausible failure; escalate only when risk or evidence warrants it.
+默认采用以下验证预算；失败、证据不足或覆盖范围变化时再增加检查。
 
-| Change | Minimum validation |
+| 变更类型 | 默认验证 |
 |---|---|
-| Mechanical text/format/metadata | Focused diff; syntax or format check only when relevant |
-| Local behavior | Narrowest test; otherwise focused typecheck, lint, build, or smoke check |
-| Shared or cross-layer contract | Direct consumers plus one focused integration or end-to-end path |
-| Material UI layout/interaction/routing | Real rendering and relevant responsive, state, keyboard, and accessibility cases |
-| Content-only UI | Render only when content length, structure, or styling creates credible layout risk |
-| Refactor | Characterization/equivalence for behavior; compile, typecheck, format, or diff for mechanics |
-| Performance | Measure before changing and report comparable before/after results |
-| Test/CI/build failure | Classify the error, fix its cause, then rerun the check that demonstrates recovery |
+| 机械文字、格式或元数据 | 检查一次定向差异；仅在相关时执行语法或格式检查 |
+| 局部行为 | 执行一次最窄的相关测试；没有测试时选定向类型检查、静态检查、构建或冒烟检查 |
+| 共享或跨层契约 | 检查直接调用方，再执行一条定向集成或端到端路径 |
+| 重要界面布局、交互或路由 | 一次语法或定向测试，加一次受影响页面的真实渲染；完整响应式、状态、键盘和无障碍检查放在里程碑结束时 |
+| 仅内容变化的界面 | 只有内容长度、结构或样式存在可信布局风险时才真实渲染 |
+| 性能或构建故障 | 先获得基线或识别错误类别，修改后只重跑能证明恢复的检查 |
 
-- For bugs, reproduce when practical, identify the mechanism, and verify the original scenario. Prefer a regression test or exact reproduction for complex behavior.
-- “No tests” still requires the cheapest useful alternate check. Skip all validation only when explicitly asked, and state the risk.
-- Batch unchanged expensive checks after adjacent low-risk tweaks at a milestone or before closing.
-- If validation is unavailable, state what remains unverified, why, the risk, and any alternate check performed.
-- After three failed hypotheses, re-baseline what is known, ruled out, and unknown. For a reproducible regression with a clear range, prefer `git bisect`.
+- 先完成一组连贯修改，再验证；不得每打一个补丁就重复测试或渲染。同一项昂贵检查只有在失败或其覆盖代码再次变化时才重跑。
+- 优先复用现有页面、测试和测试夹具。确需临时浏览器验证页时，只创建一次、集中验证一次并清理一次。
+- 缺陷修复应尽可能复现问题、确认触发机制并验证原场景；复杂或易回归行为优先补回归测试或精确复现。
+- “不新增测试”仍需执行成本最低的有效替代检查。只有用户明确要求时才可跳过全部验证，并说明风险。
+- 无法验证时，说明未验证项、原因、剩余风险和已执行的替代检查。
 
-## Closing Report
+## 结果汇报
 
-Report what changed, checks actually run, and remaining uncertainty. Use `Changed`, `Validated`, and `Unverified / needs decision` headings for substantial work; use one to three sentences for a small low-risk change. Say “verified” or “passed” only for checks run, and label reading-based conclusions as inferred.
+按改动规模汇报实际变更、已运行检查及剩余不确定性。较大改动使用“变更、验证、未验证 / 待决定”；小型低风险改动用一至三句话包含相同信息。只有实际运行过的检查才能写“已验证”或“通过”，仅由代码阅读得到的结论必须标为推断。
 
-Explicit user instructions, repository conventions, and higher-priority constraints may change the method or report format, but not permission boundaries, validation honesty, or protection of user work.
+用户明确指令、仓库约定和更高优先级规则可以改变执行方法或汇报格式，但不得改变权限边界、验证诚实性和对用户改动的保护。

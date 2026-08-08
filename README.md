@@ -2,7 +2,7 @@
 
 [中文](README.zh-CN.md)
 
-`shanshi-coding` is an AI coding skill for engineering tasks where the current request authorizes local project-file changes.
+`shanshi-coding` is an AI coding skill for tasks that explicitly authorize changes to software behavior or engineering controls in the current turn.
 
 It focuses on collaboration discipline, validation honesty, and risk control. The skill is intentionally compact: high-capability coding models already know general programming, so `SKILL.md` keeps only the operating boundaries and rules that are easy to forget under pressure.
 
@@ -10,28 +10,30 @@ The prompt design avoids assumptions about provider-specific tools or reasoning 
 
 ### When To Use
 
-Use this skill when the current request authorizes modifying project files, including:
+Use this skill when the current request explicitly authorizes an engineering change, including:
 
 - Implementing features
-- Editing code, config, scripts, or documentation
-- Refactoring
-- Diagnosing and fixing defects
-- Adding or adjusting tests
-- Handling test, CI, or build failures
+- Fixing defects or refactoring
+- Changing APIs or data contracts
+- Updating runtime, build, or CI configuration and scripts
+- Adding or adjusting tests and resolving related failures
+- Performing explicitly requested version-control operations
 
-Do not use it for read-only review, diagnosis, explanation, lookup, path finding, design discussion, or a plan that requires later approval before editing.
+Documentation is included only when required by the engineering change. Read-only analysis and independent content or metadata maintenance do not trigger this skill.
 
 ### What It Enforces
 
 - Distinguish read-only work from requests that authorize local changes.
+- Treat an unambiguous "continue implementation" or "complete the agreed plan" as current-turn authorization; otherwise, do not inherit authorization from an earlier turn.
 - Align goal, scope, constraints, and done criteria before implementation.
 - Read the relevant code before editing.
 - Preserve user changes and avoid unrelated cleanup.
 - Continue safe in-scope local work without repeated approval requests.
-- Stop before destructive, irreversible, external, costly, or scope-expanding actions that lack authorization.
+- Stop before destructive, irreversible, costly, scope-expanding, or external-system state changes that lack authorization.
 - Validate according to the task type.
 - Never claim tests or verification passed unless they actually ran.
 - Treat bug fixes as root-cause work, not symptom patching.
+- For frontend changes, inspect real rendering when warranted and immediately check the changed main path, runtime errors, and directly affected loading, error, or focus states.
 - End every change with evidence about what changed, what was validated, and what remains unverified; use the default headings unless another format is required.
 
 ### Install

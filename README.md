@@ -2,7 +2,7 @@
 
 [中文](README.zh-CN.md)
 
-`shanshi-coding` is an AI coding skill for current-turn requests that explicitly authorize changes to software behavior or engineering controls. It also covers version-control and release operations explicitly requested after human review.
+`shanshi-coding` is an AI coding skill for current-turn requests that ask an agent to carry out actual local changes to software behavior or engineering controls. It also covers commit, push, merge, or release operations explicitly requested after human review.
 
 It focuses on collaboration discipline, validation honesty, and risk control. The skill is intentionally compact: high-capability coding models already know general programming, so `SKILL.md` keeps only the operating boundaries and rules that are easy to forget under pressure.
 
@@ -10,20 +10,21 @@ The prompt design avoids assumptions about provider-specific tools or reasoning 
 
 ## When To Use
 
-Use this skill when the current request explicitly authorizes an engineering change, including:
+Use this skill when the current request asks the agent to carry out an engineering change, including:
 
 - Implementing features
 - Fixing defects or refactoring
 - Changing APIs or data contracts
 - Updating runtime, build, or CI configuration and scripts
 - Adding or adjusting tests and resolving related failures
-- Performing version-control or release operations explicitly requested after human review
+- Committing, pushing, merging, or releasing after human review
 
-Documentation is included only when required by the engineering change. Read-only analysis and independent content or metadata maintenance do not trigger this skill.
+Documentation is included only when required by the engineering change. Requests only for a plan, read-only analysis, review, or independent content or metadata maintenance do not trigger this skill.
 
 ## What It Enforces
 
-- Distinguish read-only work from requests that authorize local changes.
+- Determine authorization from the requested deliverable, not isolated action words such as "change" or "adjust."
+- Treat requests for a plan, diagnosis, review, or comparison as read-only unless the current turn also asks for implementation.
 - Treat an unambiguous "continue implementation" or "complete the agreed plan" as current-turn authorization; otherwise, do not inherit authorization from an earlier turn.
 - Align goal, scope, constraints, and done criteria before implementation.
 - Read the relevant code before editing.

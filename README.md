@@ -2,41 +2,36 @@
 
 [中文](README.zh-CN.md)
 
-`shanshi-coding` is an AI coding skill for current-turn requests that ask an agent to carry out actual local changes to software behavior or engineering controls. It also covers commit, push, merge, or release operations explicitly requested after human review.
+`shanshi-coding` supports everyday software development: requirements alignment, technical design, engineering documentation, implementation, technical diagnosis, review, and delivery.
 
-It focuses on collaboration discipline, validation honesty, and risk control. The skill is intentionally compact: high-capability coding models already know general programming, so `SKILL.md` keeps only the operating boundaries and rules that are easy to forget under pressure.
-
-The prompt design avoids assumptions about provider-specific tools or reasoning mechanisms so the skill remains portable across capable coding agents.
+Its purpose is to improve requirement understanding, engineering decisions, and the reliability of results. Apply only the guidance relevant to the task; ordinary work does not need a formal design document or a fixed sequence of steps. The instructions do not depend on a particular model or tool provider.
 
 ## When To Use
 
-Use this skill when the current request asks the agent to carry out an engineering change, including:
+Use this skill for software project work:
 
-- Implementing features
-- Fixing defects or refactoring
-- Changing APIs or data contracts
-- Updating runtime, build, or CI configuration and scripts
-- Adding or adjusting tests and resolving related failures
-- Committing, pushing, merging, or releasing after human review
+- Align requirements for engineering work, compare technical designs, and maintain engineering documentation.
+- Implement features, refactor, and change APIs, data contracts, configuration, scripts, or tests.
+- Diagnose failures and fix defects.
+- Review code and perform explicitly requested version-control or release operations.
 
-Documentation is included only when required by the engineering change. Requests only for a plan, read-only analysis, review, or independent content or metadata maintenance do not trigger this skill.
+Requests only to discuss business or explain existing business logic do not trigger the skill, even when reading code is necessary. Understanding business behavior remains part of applicable engineering work. General writing, personal records, and tasks unrelated to software engineering are also outside its scope.
 
-## What It Enforces
+Loading the skill does not authorize code changes. Technical analysis and review remain read-only; a documentation request authorizes the relevant documents. Implementation follows the user's request and confirmed context.
 
-- Determine authorization from the requested deliverable, not isolated action words such as "change" or "adjust."
-- Treat requests for a plan, diagnosis, review, or comparison as read-only unless the current turn also asks for implementation.
-- Treat an unambiguous "continue implementation" or "complete the agreed plan" as current-turn authorization; otherwise, do not inherit authorization from an earlier turn.
-- Align goal, scope, constraints, and done criteria before implementation.
-- Read the relevant code before editing.
-- Preserve user changes and avoid unrelated cleanup.
-- Continue safe in-scope local work without repeated approval requests.
-- Stop before destructive, irreversible, costly, scope-expanding, or external-system state changes that lack authorization.
-- Complete coherent changes before running minimum-sufficient, risk-matched validation by default; validate earlier only when the result must guide implementation or block a high-risk mistake.
-- Merge overlapping checks and do not rerun checks that later changes have not invalidated.
-- Never claim tests or verification passed unless they actually ran.
-- Treat bug fixes as root-cause work, not symptom patching.
-- For frontend changes, inspect real rendering only when static checks cannot cover material visual or interaction risk; use alternative evidence and report the remaining risk when rendering cost is unreasonable.
-- Report what changed, what was actually validated, what remains unverified, and any remaining risk in a format proportional to the task size.
+## Working Principles
+
+- Resolve important ambiguity with project evidence and concrete expected behavior. Ask about unresolved business decisions; handle low-risk details autonomously.
+- Establish ownership and contracts before detailed design. Choose a sound, maintainable approach, reuse existing capabilities, and justify added complexity.
+- Define acceptance criteria and representative scenarios before implementation, independently of the code being written.
+- Validate coherent changes using evidence proportional to risk and relevant to the target environment. Reuse valid results and respect user-specified test timing.
+- Add tests for business behavior and regression risk. Explain the scenario, meaningful setup data, expected outcome, and assertion purpose without imposing a rigid comment template.
+- Review findings against requirements and evidence. Report actual results and limitations, preserve user changes, and leave commits and releases to explicit user requests after review.
+- Start commit messages with a one-line summary, then use a numbered body for the core changes and any necessary rationale. Use as many items as needed and respect the repository's commit format.
+
+## Evaluating Effectiveness
+
+A skill read shows that its instructions were loaded, not that they were followed successfully. Evaluate whether important ambiguities were resolved, designs reused appropriate capabilities, acceptance criteria preceded implementation, and validation covered the intended business outcome. Distinguish rework caused by misunderstood requirements or defects from new requirements and normal exploration; do not judge quality by load counts or test counts alone.
 
 ## Install
 

@@ -80,6 +80,8 @@ cd shanshi-coding
 
 默认情况下，`publish.sh` 会跳过已有但不受它管理的 `SKILL.md`。只有在明确需要替换该文件时才使用 `--force`。
 
+脚本仅将文件末尾完整、且技能名称匹配的管理尾注视为有效标记，正文中的示例不算。安装后会核对每个所选目标的版本和完整内容；全部一致才报告成功，跳过非受管理文件、写入失败或核对不一致时返回非零退出码，并继续处理其余目标。预览不会写入目标，也不会声称安装成功。
+
 方式 B：直接 clone 到某个工具的 skills 目录。
 
 ### Codex
@@ -122,6 +124,8 @@ git -C ~/.agents/skills/shanshi-coding pull
 
 如果安装在 Claude Code 或 opencode 目录，请替换成对应路径。
 
+运行 `./publish.sh status` 可查看三个工具的安装状态：未安装、非受管理、内容不同、版本不同或已核对一致。源文件与目标为同一文件时单独标明；版本标记相同但正文有改动时，不会显示为已同步。`status` 仅用于查看状态，安装不一致不改变它的退出码。
+
 ## 卸载
 
 如果通过 `publish.sh` 安装：
@@ -133,8 +137,18 @@ git -C ~/.agents/skills/shanshi-coding pull
 
 卸载命令只删除带有本脚本管理标记的 `SKILL.md`。如果是直接 clone 到工具目录，请手动删除那个 clone 目录。
 
+## 脚本验证
+
+```bash
+bash -n publish.sh
+python3 -B -m unittest discover -s tests -v
+```
+
+测试在临时目录中核对真实安装产物，覆盖尾注识别、内容与版本偏差、部分失败、强制替换、预览、卸载及同源文件保护，不改动本机已安装内容。
+
 ## 文件
 
 - `SKILL.md`：编码代理实际加载的 skill。
 - `README.md`：中文使用说明、示例与安装指南。
 - `publish.sh`：安装/卸载到 Claude Code、Codex 和 opencode 的本地脚本。
+- `tests/test_publish.py`：发布脚本的行为回归测试。

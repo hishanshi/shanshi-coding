@@ -1,0 +1,2 @@
+# 这是需要版本管理的发布源文件，不沿用全局对 AGENTS.md 的忽略规则。
+!/common/AGENTS.md
